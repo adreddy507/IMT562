@@ -70,7 +70,7 @@
          var defaultVisualView = "Normalized";
          var defaultFun = formatLOGM;
         var map = d3.geomap.choropleth()
-                    .geofile('/topojson/world/countries.json')
+                    .geofile('topojson/world/countries.json')
                     .colors(colorbrewer.YlGnBu[9])
                     .column(defaultVisualView + ' - '+ defaultStat)
                     .format(defaultFun)
