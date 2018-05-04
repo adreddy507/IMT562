@@ -4,9 +4,9 @@
         <title> Immigration Statistics </title>
         <script src="http://d3js.org/d3.v3.min.js"></script>
         <meta charset="utf-8">
-        <link href="/css/d3.geomap.css" rel="stylesheet">
-        <script src="/vendor/d3.geomap.dependencies.min.js"></script>
-        <script src="/js/d3.geomap.min.js"></script>
+        <link href="css/d3.geomap.css" rel="stylesheet">
+        <script src="vendor/d3.geomap.dependencies.min.js"></script>
+        <script src="js/d3.geomap.min.js"></script>
     </head>
     <body>
 
@@ -70,7 +70,7 @@
          var defaultVisualView = "Normalized";
          var defaultFun = formatLOGM;
         var map = d3.geomap.choropleth()
-                    .geofile('/topojson/world/countries.json')
+                    .geofile('topojson/world/countries.json')
                     .colors(colorbrewer.YlGnBu[9])
                     .column(defaultVisualView + ' - '+ defaultStat)
                     .format(defaultFun)
