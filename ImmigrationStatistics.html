@@ -1,0 +1,143 @@
+<html>
+
+    <head>
+        <title> Immigration Statistics </title>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <meta charset="utf-8">
+        <link href="/css/d3.geomap.css" rel="stylesheet">
+        <script src="/vendor/d3.geomap.dependencies.min.js"></script>
+        <script src="/js/d3.geomap.min.js"></script>
+    </head>
+    <body>
+
+<div id = "ImmigrationStatistics" align = "center" >
+
+  <h2> Immigration Statistics of United States Of America</h2>
+
+</div>
+<div align="left">
+  <h2>Dynamic Query Options : </h2>
+  <h2/>
+
+</div>
+
+<div id = "options" float:middle>
+
+  <label for="Year" align = "left" style="font-size:160%;color: Blue; background-color:silver; margin-right:10px; margin-left: 25px" >Year: </label>
+  <select id = "Year" name = "Year" style="font-size:160%;color: black">
+    <option value="2015">2015</option>
+    <option value="2016">2016</option>
+  </select>
+
+  <label for="ImmigrationType" align ="center" style="font-size:160%;color: blue; background-color:silver; margin-right:10px; margin-left: 25px">ImmigrationType: </label>
+  <select id = "ImmigrationType" name = "ImmigrationType"style="font-size:150%;color: black >
+    <option value = "TotalImmigration">TotalImmigration</option>
+    <option value = "HighSkilledWorkers">HighSkilledWorkers</option>
+    <option value = "AgriculturalWorkers">AgriculturalWorkers</option>
+    <option value = "Non-AgriculturalWorkers">Non-AgriculturalWorkers</option>
+    <option value = "ExtrordinaryAcheivements">ExtrordinaryAcheivements</option>
+    <option value = "Athlets">Athlets</option>
+    <option value = "Intra-CompanyTransfers">Intra-CompanyTransfers</option>
+    <option value = "Treaty">Treaty</option>
+    <option value = "OtherTypes">OtherTypes</option>
+  </select>
+
+  <input name="ShowNormalizedVisual"
+                 type="button"
+                 value="Show Normalized Visual"
+                 style="height:50px; width:250; background-color:greay;margin-left:15px;margin-right:25px; font-size: 20px"
+                 onclick="ShowNormalizedVisual()" />
+
+  <input name="ShowRawVisual"
+                 type="button"
+                 value="Show Raw Visual"
+                 style="height:50px; width:250; background-color:greay;margin-left:15px;margin-right:25px; font-size: 20px"
+                 onclick="ShowRawVisual()" />
+</div>
+<script>
+
+         var formatLOGM = function(d) {
+             //d = d / 1000000;
+           return d3.format(',.04f')(d) + '(LOG10(n))';
+         }
+         var format = function(d) {
+             d = d / 1000000;
+             return d3.format(',.04f')(d) + 'M';
+           }
+         var defaultFileName = 'ImmigrationStatistics_2016.csv';
+         var defaultStat = 'Density(PerMIllion)';
+         var defaultYear = "2015";
+         var defaultVisualView = "Normalized";
+         var defaultFun = formatLOGM;
+        var map = d3.geomap.choropleth()
+                    .geofile('/topojson/world/countries.json')
+                    .colors(colorbrewer.YlGnBu[9])
+                    .column(defaultVisualView + ' - '+ defaultStat)
+                    .format(defaultFun)
+                    .legend(true)
+                    .unitId('Country Code');
+
+        d3.csv(defaultFileName, function(error, data) {
+          d3.select('#ImmigrationStatistics')
+              .datum(data)
+              .call(map.draw, map);
+        });
+
+         var dropDownYear = d3.select("#Year");
+         dropDownYear.on("change", function(){
+              defaultYear = this.value;
+           LoadData(defaultYear, defaultStat, defaultVisualView, defaultFun);
+         })
+
+         var dropDownImmigrationType = d3.select("#ImmigrationType");
+         dropDownImmigrationType.on("change", function(){
+           defaultStat = this.value;
+           if( defaultStat == 'TotalImmigration')
+              defaultStat = 'Total';
+           if( defaultStat == 'HighSkilledWorkers')
+              defaultStat = 'H1B';
+           if(defaultStat =='AgriculturalWorkers' )
+              defaultStat = 'H2A';
+           if( defaultStat == 'Non-AgriculturalWorkers')
+              defaultStat = 'H2B';
+           if( defaultStat == 'ExtrordinaryAcheivements')
+             defaultStat = 'O1-2';
+           if( defaultStat == 'Athlets')
+              defaultStat = 'P1-3';
+           if( defaultStat == 'Intra-CompanyTransfers')
+             defaultStat = 'L1';
+           if( defaultStat == 'Treaty')
+             defaultStat = 'EB5';
+           if( defaultStat == 'OtherTypes')
+             defaultStat = 'Other';
+           LoadData(defaultYear, defaultStat, defaultVisualView, defaultFun);
+         })
+
+        function LoadData(Year, Type, ViewStyle, defaultFun){
+            defaultFileName = 'ImmigrationStatistics_'+Year+'.csv';
+            d3.csv(defaultFileName, function(error, data) {
+              <!--  refreshing svg to redraw -->
+              if(ViewStyle != '')
+                Type = ViewStyle + ' - ' +Type;
+              map.column(Type);
+              map.format(defaultFun);
+              d3.selectAll("g > *").remove();
+              d3.selectAll("svg").remove();
+              d3.select('#ImmigrationStatistics')
+                  .datum(data)
+                  .call(map.draw, map);
+            });
+        }
+
+
+      function ShowNormalizedVisual() {
+          LoadData(defaultYear, defaultStat, defaultVisualView,formatLOGM);
+      }
+
+      function ShowRawVisual() {
+          LoadData(defaultYear, defaultStat, '', format);
+      }
+</script>
+
+    </body>
+</html>
